@@ -2,13 +2,14 @@ package runner
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/logrusorgru/aurora/v4"
-	"github.com/projectdiscovery/fileutil"
 	"github.com/projectdiscovery/goflags"
 	"github.com/projectdiscovery/gologger"
 	"github.com/projectdiscovery/gologger/formatter"
 	"github.com/projectdiscovery/gologger/levels"
+	fileutil "github.com/projectdiscovery/utils/file"
 )
 
 var (
@@ -20,29 +21,32 @@ var (
 		}
 		return home
 	}()
+
+	defaultConfigLocation = filepath.Join(homeDir, ".config/manx/config.yaml")
 )
 
 var au *aurora.Aurora
 
 // Options contains the configuration options for tuning the enumeration process.
 type Options struct {
-	OpenaiApiKey       string
-	Prompt             string
-	Gpt3               bool
-	Gpt4               bool
-	Update             bool
-	DisableUpdateCheck bool
-	Output             string
-	Jsonl              bool
-	Verbose            bool
-	Silent             bool
-	NoColor            bool
-	Version            bool
+	OpenaiApiKey       string `yaml:"openai_api_key"`
+	Prompt             string `yaml:"prompt"`
+	Gpt3               bool   `yaml:"gpt3"`
+	Gpt4               bool   `yaml:"gpt4"`
+	Update             bool   `yaml:"update"`
+	DisableUpdateCheck bool   `yaml:"disable_update_check"`
+	Output             string `yaml:"output"`
+	Jsonl              bool   `yaml:"jsonl"`
+	Verbose            bool   `yaml:"verbose"`
+	Silent             bool   `yaml:"silent"`
+	NoColor            bool   `yaml:"no_color"`
+	Version            bool   `yaml:"version"`
 }
 
 // ParseOptions parses the command line flags provided by a user
 func ParseOptions() *Options {
 	options := &Options{}
+
 	flagSet := goflags.NewFlagSet()
 
 	flagSet.SetDescription(`manX is a golang based CLI tool to interact with Large Language Models (LLM) and Manual of everything.`)
@@ -100,6 +104,10 @@ func ParseOptions() *Options {
 		os.Exit(0)
 	}
 
+	if options.OpenaiApiKey == "" {
+		_ = options.loadConfigFrom(defaultConfigLocation)
+	}
+
 	// if !options.DisableUpdateCheck {
 	// 	latestVersion, err := updateutils.GetVersionCheckCallback("manx")()
 	// 	if err != nil {
@@ -127,4 +135,8 @@ func (options *Options) configureOutput() {
 	if options.Silent {
 		gologger.DefaultLogger.SetMaxLevel(levels.LevelSilent)
 	}
+}
+
+func (Options *Options) loadConfigFrom(location string) error {
+	return fileutil.Unmarshal(fileutil.YAML, []byte(location), Options)
 }
