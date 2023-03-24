@@ -99,6 +99,12 @@ func ParseOptions() *Options {
 	}
 
 	if options.OpenaiApiKey == "" {
+		if key, exists := os.LookupEnv("OPENAI_API_KEY"); exists {
+			options.OpenaiApiKey = key
+		}
+	}
+
+	if options.OpenaiApiKey == "" {
 		_ = options.loadConfigFrom(defaultConfigLocation)
 	}
 
