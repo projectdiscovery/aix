@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -108,6 +108,10 @@ func (r *Runner) Run() error {
 		gologger.Silent().Msgf("%s", result.JSON())
 		return nil
 	}
+	if r.options.Silent {
+		gologger.Silent().Msgf("%s", chatGptResp.Choices[0].Message.Content)
+		return nil
+	}
 	gologger.Info().Msgf("%s", chatGptResp.Choices[0].Message.Content)
 
 	return nil
@@ -142,7 +146,7 @@ func (r *Runner) DoGptApiRequest(requestBody ChatGptRequest) (ChatGptResponse, e
 	}
 
 	// Read and parse the response
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return ChatGptResponse{}, err
 	}
