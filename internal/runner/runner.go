@@ -1,48 +1,14 @@
 package runner
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"time"
 
 	"github.com/projectdiscovery/gologger"
+	"github.com/sashabaranov/go-openai"
 )
-
-var ApiUrl = "https://api.openai.com/v1/chat/completions"
-
-type ChatGptRequest struct {
-	Model    string           `json:"model"`
-	Messages []ChatGptMessage `json:"messages"`
-}
-
-type ChatGptMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
-type ChatGptResponse struct {
-	ID      string `json:"id"`
-	Object  string `json:"object"`
-	Created int    `json:"created"`
-	Model   string `json:"model"`
-	Usage   struct {
-		PromptTokens     int `json:"prompt_tokens"`
-		CompletionTokens int `json:"completion_tokens"`
-		TotalTokens      int `json:"total_tokens"`
-	} `json:"usage"`
-	Choices []struct {
-		Message struct {
-			Role    string `json:"role"`
-			Content string `json:"content"`
-		} `json:"message"`
-		FinishReason string `json:"finish_reason"`
-		Index        int    `json:"index"`
-	} `json:"choices"`
-}
 
 // Runner contains the internal logic of the program
 type Runner struct {
@@ -64,26 +30,27 @@ func (r *Runner) Run() error {
 		os.Exit(1)
 	}
 
+	client := openai.NewClient(r.options.OpenaiApiKey)
+
 	if r.options.Gpt3 {
-		model = "gpt-3.5-turbo"
+		model = openai.GPT3Dot5Turbo
 	}
 	if r.options.Gpt4 {
-		gologger.Warning().Msg("not implemented")
-		os.Exit(1)
+		model = openai.GPT4
 	}
 
-	messages := []ChatGptMessage{
-		{
-			Role:    "user",
-			Content: r.options.Prompt,
+	chatGptResp, err := client.CreateChatCompletion(
+		context.Background(),
+		openai.ChatCompletionRequest{
+			Model: model,
+			Messages: []openai.ChatCompletionMessage{
+				{
+					Role:    openai.ChatMessageRoleUser,
+					Content: r.options.Prompt,
+				},
+			},
 		},
-	}
-	reqData := ChatGptRequest{
-		Model:    model,
-		Messages: messages,
-	}
-
-	chatGptResp, err := r.DoGptApiRequest(reqData)
+	)
 	if err != nil {
 		return err
 	}
@@ -93,7 +60,7 @@ func (r *Runner) Run() error {
 	}
 
 	if r.options.Verbose {
-		gologger.Verbose().Msgf("[prompt] %s", messages[0].Content)
+		gologger.Verbose().Msgf("[prompt] %s", r.options.Prompt)
 		gologger.Verbose().Msgf("[completion] %s", chatGptResp.Choices[0].Message.Content)
 		return nil
 	}
@@ -102,7 +69,7 @@ func (r *Runner) Run() error {
 		result := Result{
 			Timestamp:  time.Now().String(),
 			Model:      model,
-			Prompt:     messages[0].Content,
+			Prompt:     r.options.Prompt,
 			Completion: chatGptResp.Choices[0].Message.Content,
 		}
 		gologger.Silent().Msgf("%s", result.JSON())
@@ -115,46 +82,4 @@ func (r *Runner) Run() error {
 	gologger.Info().Msgf("%s", chatGptResp.Choices[0].Message.Content)
 
 	return nil
-}
-
-func (r *Runner) DoGptApiRequest(requestBody ChatGptRequest) (ChatGptResponse, error) {
-	reqBody, err := json.Marshal(requestBody)
-	if err != nil {
-		return ChatGptResponse{}, err
-	}
-
-	// Create an HTTP client and set up the API call
-	client := &http.Client{}
-	req, err := http.NewRequest("POST", ApiUrl, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return ChatGptResponse{}, err
-	}
-
-	// Add required headers
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", r.options.OpenaiApiKey))
-
-	// Make the API call
-	resp, err := client.Do(req)
-	if err != nil {
-		return ChatGptResponse{}, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		return ChatGptResponse{}, fmt.Errorf("status code was %v", resp.StatusCode)
-	}
-
-	// Read and parse the response
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return ChatGptResponse{}, err
-	}
-	var chatGptResp ChatGptResponse
-	err = json.Unmarshal(respBody, &chatGptResp)
-	if err != nil {
-		return ChatGptResponse{}, err
-	}
-
-	return chatGptResp, nil
 }
