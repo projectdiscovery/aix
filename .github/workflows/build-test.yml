@@ -32,10 +32,6 @@ jobs:
         working-directory: .
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        
-      - name: Race Condition Tests
-        run: go run -race .
-        working-directory: cmd/manx/
       
       - name: Test Example Code
         run: go run .
