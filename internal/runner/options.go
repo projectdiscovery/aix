@@ -133,5 +133,3 @@ func (options *Options) configureOutput() {
 func (Options *Options) loadConfigFrom(location string) error {
 	return fileutil.Unmarshal(fileutil.YAML, []byte(location), Options)
 }
-
-// aaa
