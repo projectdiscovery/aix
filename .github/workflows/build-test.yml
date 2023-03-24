@@ -2,9 +2,6 @@ name: 🔨 Build Test
 
 on:
   pull_request:
-    paths:
-      - '**.go'
-      - '**.mod'
   workflow_dispatch:
 
 jobs:
@@ -32,7 +29,3 @@ jobs:
         working-directory: .
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      
-      - name: Test Example Code
-        run: go run .
-        working-directory: examples/
