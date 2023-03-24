@@ -12,7 +12,7 @@ import (
 
 func main() {
 	options := runner.ParseOptions()
-	pdtmRunner, err := runner.NewRunner(options)
+	manxRunner, err := runner.NewRunner(options)
 	if err != nil {
 		gologger.Fatal().Msgf("Could not create runner: %s\n", err)
 	}
@@ -26,8 +26,19 @@ func main() {
 		os.Exit(0)
 	}()
 
-	err = pdtmRunner.Run()
+	result, err := manxRunner.Run()
 	if err != nil {
-		gologger.Fatal().Msgf("Could not run pdtm: %s\n", err)
+		gologger.Fatal().Msgf("Could not run manx: %s\n", err)
+	}
+
+	if options.Verbose {
+		gologger.Verbose().Msgf("[prompt] %s", result.Prompt)
+		gologger.Verbose().Msgf("[completion] %s", result.Completion)
+	} else if options.Jsonl {
+		gologger.Silent().Msgf("%s", result.JSON())
+	} else if options.Silent {
+		gologger.Silent().Msgf("%s", result.Completion)
+	} else {
+		gologger.Info().Msgf("%s", result.Completion)
 	}
 }

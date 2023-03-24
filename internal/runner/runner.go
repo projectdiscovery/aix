@@ -3,10 +3,8 @@ package runner
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
-	"github.com/projectdiscovery/gologger"
 	"github.com/sashabaranov/go-openai"
 )
 
@@ -23,11 +21,10 @@ func NewRunner(options *Options) (*Runner, error) {
 }
 
 // Run the instance
-func (r *Runner) Run() error {
+func (r *Runner) Run() (*Result, error) {
 	var model string
 	if r.options.OpenaiApiKey == "" {
-		gologger.Info().Msgf("OPENAI_API_KEY is not configured / provided.")
-		os.Exit(1)
+		return &Result{}, fmt.Errorf("OPENAI_API_KEY is not configured / provided.")
 	}
 
 	client := openai.NewClient(r.options.OpenaiApiKey)
@@ -52,34 +49,19 @@ func (r *Runner) Run() error {
 		},
 	)
 	if err != nil {
-		return err
+		return &Result{}, err
 	}
 
 	if len(chatGptResp.Choices) == 0 {
-		return fmt.Errorf("no data on response")
+		return &Result{}, fmt.Errorf("no data on response")
 	}
 
-	if r.options.Verbose {
-		gologger.Verbose().Msgf("[prompt] %s", r.options.Prompt)
-		gologger.Verbose().Msgf("[completion] %s", chatGptResp.Choices[0].Message.Content)
-		return nil
+	result := &Result{
+		Timestamp:  time.Now().String(),
+		Model:      model,
+		Prompt:     r.options.Prompt,
+		Completion: chatGptResp.Choices[0].Message.Content,
 	}
 
-	if r.options.Jsonl {
-		result := Result{
-			Timestamp:  time.Now().String(),
-			Model:      model,
-			Prompt:     r.options.Prompt,
-			Completion: chatGptResp.Choices[0].Message.Content,
-		}
-		gologger.Silent().Msgf("%s", result.JSON())
-		return nil
-	}
-	if r.options.Silent {
-		gologger.Silent().Msgf("%s", chatGptResp.Choices[0].Message.Content)
-		return nil
-	}
-	gologger.Info().Msgf("%s", chatGptResp.Choices[0].Message.Content)
-
-	return nil
+	return result, nil
 }
