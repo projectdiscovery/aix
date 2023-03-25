@@ -7,12 +7,12 @@ import (
 	"syscall"
 
 	"github.com/projectdiscovery/gologger"
-	"github.com/projectdiscovery/manx/internal/runner"
+	"github.com/projectdiscovery/aix/internal/runner"
 )
 
 func main() {
 	options := runner.ParseOptions()
-	manxRunner, err := runner.NewRunner(options)
+	aixRunner, err := runner.NewRunner(options)
 	if err != nil {
 		gologger.Fatal().Msgf("Could not create runner: %s\n", err)
 	}
@@ -26,9 +26,9 @@ func main() {
 		os.Exit(0)
 	}()
 
-	result, err := manxRunner.Run()
+	result, err := aixRunner.Run()
 	if err != nil {
-		gologger.Fatal().Msgf("Could not run manx: %s\n", err)
+		gologger.Fatal().Msgf("Could not run aix: %s\n", err)
 	}
 
 	if options.Verbose {
