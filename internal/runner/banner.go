@@ -8,11 +8,12 @@ import (
 const version = "v0.0.1"
 
 var banner = (`
-                         _  __
-   ____ ___  ____ _____ | |/ /
-  / __ '__ \/ __ '/ __ \|   / 
- / / / / / / /_/ / / / /   |  
-/_/ /_/ /_/\__,_/_/ /_/_/|_|   Powered by OpenAI				  
+   ___   _____  __
+  / _ | /  _/ |/_/
+ / __ |_/ /_>  < 
+/_/ |_/___/_/|_|  Powered by OpenAI
+
+   projectdiscovery.io		  
 `)
 
 // showBanner is used to show the banner to the user

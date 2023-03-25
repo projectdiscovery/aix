@@ -22,7 +22,7 @@ jobs:
 
       - name: Build
         run: go build .
-        working-directory: cmd/manx/
+        working-directory: cmd/aix/
 
       - name: Test
         run: go test ./...

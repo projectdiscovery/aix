@@ -21,7 +21,7 @@ var (
 		return home
 	}()
 
-	defaultConfigLocation = filepath.Join(homeDir, ".config/manx/config.yaml")
+	defaultConfigLocation = filepath.Join(homeDir, ".config/aix/config.yaml")
 )
 
 // Options contains the configuration options for tuning the enumeration process.
@@ -46,7 +46,7 @@ func ParseOptions() *Options {
 
 	flagSet := goflags.NewFlagSet()
 
-	flagSet.SetDescription(`manX is a golang based CLI tool to interact with Large Language Models (LLM) and Manual of everything.`)
+	flagSet.SetDescription(`AIx is a cli tool to interact with Large Language Model (LLM) APIs.`)
 
 	flagSet.CreateGroup("input", "Input",
 		flagSet.StringVarP(&options.Prompt, "prompt", "p", "", "prompt to query (input: stdin,string,file)"),
@@ -109,13 +109,13 @@ func ParseOptions() *Options {
 	}
 
 	// if !options.DisableUpdateCheck {
-	// 	latestVersion, err := updateutils.GetVersionCheckCallback("manx")()
+	// 	latestVersion, err := updateutils.GetVersionCheckCallback("aix")()
 	// 	if err != nil {
 	// 		if options.Verbose {
-	// 			gologger.Error().Msgf("manX version check failed: %v", err.Error())
+	// 			gologger.Error().Msgf("aix version check failed: %v", err.Error())
 	// 		}
 	// 	} else {
-	// 		gologger.Info().Msgf("Current manx version %v %v", version, updateutils.GetVersionDescription(version, latestVersion))
+	// 		gologger.Info().Msgf("Current aix version %v %v", version, updateutils.GetVersionDescription(version, latestVersion))
 	// 	}
 	// }
 

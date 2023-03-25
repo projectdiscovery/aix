@@ -1,4 +1,4 @@
-module github.com/projectdiscovery/manx
+module github.com/projectdiscovery/aix
 
 go 1.19
 
