@@ -9,6 +9,7 @@ import (
 	"github.com/projectdiscovery/gologger/formatter"
 	"github.com/projectdiscovery/gologger/levels"
 	fileutil "github.com/projectdiscovery/utils/file"
+	updateutils "github.com/projectdiscovery/utils/update"
 )
 
 var (
@@ -53,7 +54,7 @@ func ParseOptions() *Options {
 	)
 
 	flagSet.CreateGroup("model", "Model",
-		flagSet.BoolVarP(&options.Gpt3, "gpt3", "g3", true, "use GPT-3.5 model (default)"),
+		flagSet.BoolVarP(&options.Gpt3, "gpt3", "g3", true, "use GPT-3.5 model"),
 		flagSet.BoolVarP(&options.Gpt4, "gpt4", "g4", false, "use GPT-4.0 model"),
 	)
 
@@ -108,16 +109,16 @@ func ParseOptions() *Options {
 		_ = options.loadConfigFrom(defaultConfigLocation)
 	}
 
-	// if !options.DisableUpdateCheck {
-	// 	latestVersion, err := updateutils.GetVersionCheckCallback("aix")()
-	// 	if err != nil {
-	// 		if options.Verbose {
-	// 			gologger.Error().Msgf("aix version check failed: %v", err.Error())
-	// 		}
-	// 	} else {
-	// 		gologger.Info().Msgf("Current aix version %v %v", version, updateutils.GetVersionDescription(version, latestVersion))
-	// 	}
-	// }
+	if !options.DisableUpdateCheck {
+		latestVersion, err := updateutils.GetVersionCheckCallback("aix")()
+		if err != nil {
+			if options.Verbose {
+				gologger.Error().Msgf("aix version check failed: %v", err.Error())
+			}
+		} else {
+			gologger.Info().Msgf("Current aix version %v %v", version, updateutils.GetVersionDescription(version, latestVersion))
+		}
+	}
 
 	return options
 }
