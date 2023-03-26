@@ -175,7 +175,7 @@ For more information on the usage of aix, please refer to the help menu with the
 ## Acknowledgements
 
 - [OpenAI](https://platform.openai.com/docs/introduction) for publishing LLM APIs.
-- [sashabaranov] for building and maintaining [go-openai](https://github.com/sashabaranov/go-openai) library.
+- [sashabaranov](https://github.com/sashabaranov) for building and maintaining [go-openai](https://github.com/sashabaranov/go-openai) library.
 
 --------
 
