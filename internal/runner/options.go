@@ -1,8 +1,10 @@
 package runner
 
 import (
+	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/projectdiscovery/goflags"
 	"github.com/projectdiscovery/gologger"
@@ -81,13 +83,15 @@ func ParseOptions() *Options {
 	}
 
 	if fileutil.HasStdin() {
-		stdchan, err := fileutil.ReadFileWithReader(os.Stdin)
+		bin, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			gologger.Fatal().Msgf("couldn't read stdin: %s\n", err)
 		}
-		for prompt := range stdchan {
-			options.Prompt = prompt
-		}
+		options.Prompt = string(bin)
+	}
+
+	if options.Prompt == "" {
+		options.Prompt = strings.Join(flagSet.CommandLine.Args(), " ")
 	}
 
 	options.configureOutput()
@@ -126,14 +130,14 @@ func ParseOptions() *Options {
 // configureOutput configures the output on the screen
 func (options *Options) configureOutput() {
 	// If the user desires verbose output, show verbose output
-	if options.Verbose {
-		gologger.DefaultLogger.SetMaxLevel(levels.LevelVerbose)
-	}
 	if options.NoColor {
 		gologger.DefaultLogger.SetFormatter(formatter.NewCLI(true))
 	}
 	if options.Silent {
 		gologger.DefaultLogger.SetMaxLevel(levels.LevelSilent)
+	}
+	if options.Verbose {
+		gologger.DefaultLogger.SetMaxLevel(levels.LevelVerbose)
 	}
 }
 

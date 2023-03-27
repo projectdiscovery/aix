@@ -3,6 +3,7 @@ module github.com/projectdiscovery/aix
 go 1.19
 
 require (
+	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/projectdiscovery/goflags v0.1.8
 	github.com/projectdiscovery/gologger v1.1.8
 	github.com/projectdiscovery/utils v0.0.17
@@ -29,7 +30,6 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
