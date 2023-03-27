@@ -25,12 +25,23 @@ func main() {
 
 	if options.Jsonl {
 		gologger.DefaultLogger.Print().Msg(result.JSON())
+		if options.Output != "" {
+			if err := os.WriteFile(options.Output, []byte(result.JSON()), 0644); err != nil {
+				gologger.Error().Msgf("failed to save output to file %v got %v", options.Output, err)
+			}
+			return
+		}
 	} else if options.Verbose {
 		aurora := aurora.NewAurora(!options.NoColor)
 		gologger.DefaultLogger.Print().Msgf("[%v] %v", aurora.BrightYellow("Prompt"), result.Prompt)
 		gologger.DefaultLogger.Print().Msgf("[%v] %v", aurora.BrightGreen("Completion"), result.Completion)
 	} else {
 		gologger.DefaultLogger.Print().Msg(result.Completion)
+	}
+	if options.Output != "" {
+		if err := os.WriteFile(options.Output, []byte(result.Completion), 0644); err != nil {
+			gologger.Error().Msgf("failed to save output to file %v got %v", options.Output, err)
+		}
 	}
 }
 
