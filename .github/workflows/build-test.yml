@@ -35,5 +35,5 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Build example
-        run: go build .
+        run: go run .
         working-directory: examples/
