@@ -134,7 +134,7 @@ echo list top trending web technologies | aix
 Note: These technologies are constantly changing and evolving, so this list is subject to change over time.
 ```
 
-### Example 3: Query LLM API with a prompt and save the output to a file in JSONLine format.
+### Example 4: Query LLM API with a prompt and save the output to a file in JSONLine format.
 ```console
 aix -p "What is the capital of France?" -jsonl -o output.txt | jq .
 
@@ -154,7 +154,7 @@ aix -p "What is the capital of France?" -jsonl -o output.txt | jq .
 }
 ```
 
-### Example 3: Query LLM API in verbose mode
+### Example 5: Query LLM API in verbose mode
 ```console
 aix -p "What is the capital of France?" -v
 
