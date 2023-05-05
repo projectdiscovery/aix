@@ -114,7 +114,7 @@ func ParseOptions() *Options {
 	}
 
 	if !options.DisableUpdateCheck {
-		latestVersion, err := updateutils.GetVersionCheckCallback("aix")()
+		latestVersion, err := updateutils.GetToolVersionCallback("aix", version)()
 		if err != nil {
 			if options.Verbose {
 				gologger.Error().Msgf("aix version check failed: %v", err.Error())
