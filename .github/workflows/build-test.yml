@@ -33,3 +33,7 @@ jobs:
         working-directory: .
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Build example
+        run: go build .
+        working-directory: examples/
