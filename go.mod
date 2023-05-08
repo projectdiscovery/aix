@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/projectdiscovery/goflags v0.1.8
-	github.com/projectdiscovery/gologger v1.1.8
+	github.com/projectdiscovery/gologger v1.1.9
 	github.com/projectdiscovery/utils v0.0.27
 	github.com/sashabaranov/go-openai v1.9.3
 )
