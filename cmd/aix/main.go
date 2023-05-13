@@ -55,14 +55,14 @@ func main() {
 
 	}
 	if !options.Stream {
+		outputData := result.Completion
 		if renderer != nil {
-			out, err := renderer.Render(result.Completion)
-			if err != nil {
-				fmt.Println(result.Completion)
-			} else {
-				fmt.Println(out)
+			out, err := renderer.Render(outputData)
+			if err == nil {
+				outputData = out
 			}
 		}
+		fmt.Println(outputData)
 	} else {
 		// rendering not supported for streaming
 		_, _ = io.Copy(os.Stdout, result.CompletionStream)
