@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/logrusorgru/aurora"
 	"github.com/projectdiscovery/aix/internal/runner"
 	"github.com/projectdiscovery/gologger"
@@ -13,6 +15,21 @@ import (
 
 func main() {
 	options := runner.ParseOptions()
+	if options.Stream && options.Jsonl {
+		// cannot stream jsonl
+		gologger.Fatal().Msgf("Cannot use --stream and --jsonl together")
+	}
+
+	var renderer *glamour.TermRenderer
+
+	if options.Render {
+		var err error
+		renderer, err = glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithEmoji())
+		if err != nil {
+			gologger.Error().Msgf("Could not create renderer: %s\n", err)
+		}
+	}
+
 	aixRunner, err := runner.NewRunner(options)
 	if err != nil {
 		gologger.Fatal().Msgf("Could not create runner: %s\n", err)
@@ -34,9 +51,21 @@ func main() {
 	} else if options.Verbose {
 		aurora := aurora.NewAurora(!options.NoColor)
 		gologger.DefaultLogger.Print().Msgf("[%v] %v", aurora.BrightYellow("Prompt"), result.Prompt)
-		gologger.DefaultLogger.Print().Msgf("[%v] %v", aurora.BrightGreen("Completion"), result.Completion)
+		fmt.Printf("[%v] ", aurora.BrightGreen("Completion"))
+
+	}
+	if !options.Stream {
+		if renderer != nil {
+			out, err := renderer.Render(result.Completion)
+			if err != nil {
+				fmt.Println(result.Completion)
+			} else {
+				fmt.Println(out)
+			}
+		}
 	} else {
-		gologger.DefaultLogger.Print().Msg(result.Completion)
+		// rendering not supported for streaming
+		_, _ = io.Copy(os.Stdout, result.CompletionStream)
 	}
 	if options.Output != "" {
 		if err := os.WriteFile(options.Output, []byte(result.Completion), 0644); err != nil {
