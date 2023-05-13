@@ -57,7 +57,6 @@ export OPENAI_API_KEY=******
 You can use the following command to see the available flags and options:
 
 ```console
-bash
 AIx is a cli tool to interact with Large Language Model (LLM) APIs.
 
 Usage:
@@ -68,11 +67,14 @@ INPUT:
    -p, -prompt string  prompt to query (input: stdin,string,file)
 
 MODEL:
-   -g3, -gpt3  use GPT-3.5 model (default true)
-   -g4, -gpt4  use GPT-4.0 model
+   -g3, -gpt3      use GPT-3.5 model (default true)
+   -g4, -gpt4      use GPT-4.0 model
+   -system string  system message to send to the model (optional)
 
 CONFIG:
    -ak, -openai-api-key string  openai api key token (input: string,file,env)
+   -temperature string          openai model temperature
+   -top-p string                openai model top-p
 
 UPDATE:
    -up, -update                 update aix to latest version
@@ -85,6 +87,8 @@ OUTPUT:
    -silent             display silent output
    -nc, -no-color      disable colors in cli output
    -version            display project version
+   -stream             stream output to stdout
+   -render             render markdown message returned by the model
 ```
 
 ## Examples
