@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 
 	errorutil "github.com/projectdiscovery/utils/errors"
@@ -47,10 +48,10 @@ func (r *Runner) Run() (*Result, error) {
 		Messages: []openai.ChatCompletionMessage{},
 	}
 
-	if r.options.System != "" {
+	if len(r.options.System) != 0 {
 		chatReq.Messages = append(chatReq.Messages, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleSystem,
-			Content: r.options.System,
+			Content: strings.Join(r.options.System, "\n"),
 		})
 	}
 

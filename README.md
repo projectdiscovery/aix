@@ -67,9 +67,9 @@ INPUT:
    -p, -prompt string  prompt to query (input: stdin,string,file)
 
 MODEL:
-   -g3, -gpt3      use GPT-3.5 model (default true)
-   -g4, -gpt4      use GPT-4.0 model
-   -system string  system message to send to the model (optional)
+   -g3, -gpt3        use GPT-3.5 model (default true)
+   -g4, -gpt4        use GPT-4.0 model
+   -system string[]  system message to send to the model (optional)
 
 CONFIG:
    -ak, -openai-api-key string  openai api key token (input: string,file,env)
