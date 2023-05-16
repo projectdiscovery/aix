@@ -66,7 +66,7 @@ func ParseOptions() *Options {
 	flagSet.CreateGroup("model", "Model",
 		flagSet.BoolVarP(&options.Gpt3, "gpt3", "g3", true, "use GPT-3.5 model"),
 		flagSet.BoolVarP(&options.Gpt4, "gpt4", "g4", false, "use GPT-4.0 model"),
-		flagSet.StringSliceVar(&options.System, "system", []string{}, "system message to send to the model (optional)", goflags.FileNormalizedStringSliceOptions),
+		flagSet.StringSliceVar(&options.System, "system", []string{}, "system message to send to the model (optional) (string,file)", goflags.FileNormalizedStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
