@@ -88,7 +88,7 @@ OUTPUT:
    -nc, -no-color      disable colors in cli output
    -version            display project version
    -stream             stream output to stdout
-   -render             render markdown message returned by the model
+   -no-markdown, -nm   skip rendering markdown response
 ```
 
 ## Examples

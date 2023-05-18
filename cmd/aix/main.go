@@ -22,7 +22,7 @@ func main() {
 
 	var renderer *glamour.TermRenderer
 
-	if options.Render {
+	if !options.NoMarkdown {
 		var err error
 		renderer, err = glamour.NewTermRenderer(glamour.WithAutoStyle(), glamour.WithEmoji())
 		if err != nil {

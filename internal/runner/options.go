@@ -45,8 +45,8 @@ type Options struct {
 	Stream             bool                `yaml:"stream"`
 	TopP               float32             `yaml:"top_p"`
 	Temperature        float32             `yaml:"temperature"`
-	System             goflags.StringSlice `yaml:"system"` // system message if any
-	Render             bool                `yaml:"render"` // render markdown message
+	System             goflags.StringSlice `yaml:"system"`      // system message if any
+	NoMarkdown         bool                `yaml:"no-markdown"` // render markdown message
 }
 
 // ParseOptions parses the command line flags provided by a user
@@ -88,7 +88,7 @@ func ParseOptions() *Options {
 		flagSet.BoolVarP(&options.NoColor, "no-color", "nc", false, "disable colors in cli output"),
 		flagSet.BoolVar(&options.Version, "version", false, "display project version"),
 		flagSet.BoolVar(&options.Stream, "stream", false, "stream output to stdout"),
-		flagSet.BoolVar(&options.Render, "render", false, "render markdown message returned by the model"),
+		flagSet.BoolVarP(&options.NoMarkdown, "nm", "no-markdown", false, "skip rendering markdown response"),
 	)
 
 	if err := flagSet.Parse(); err != nil {
@@ -96,14 +96,14 @@ func ParseOptions() *Options {
 	}
 
 	if temperature != "" {
-		val, _ := strconv.ParseFloat(temperature, 32)
-		if val != 0 {
+		val, err := strconv.ParseFloat(temperature, 32)
+		if err == nil {
 			options.Temperature = float32(val)
 		}
 	}
 	if topP != "" {
-		val, _ := strconv.ParseFloat(topP, 32)
-		if val != 0 {
+		val, err := strconv.ParseFloat(topP, 32)
+		if err == nil {
 			options.TopP = float32(val)
 		}
 	}
