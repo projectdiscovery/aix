@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/projectdiscovery/goflags"
@@ -29,23 +30,30 @@ var (
 
 // Options contains the configuration options for tuning the enumeration process.
 type Options struct {
-	OpenaiApiKey       string `yaml:"openai_api_key"`
-	Prompt             string `yaml:"prompt"`
-	Gpt3               bool   `yaml:"gpt3"`
-	Gpt4               bool   `yaml:"gpt4"`
-	Update             bool   `yaml:"update"`
-	DisableUpdateCheck bool   `yaml:"disable_update_check"`
-	Output             string `yaml:"output"`
-	Jsonl              bool   `yaml:"jsonl"`
-	Verbose            bool   `yaml:"verbose"`
-	Silent             bool   `yaml:"silent"`
-	NoColor            bool   `yaml:"no_color"`
-	Version            bool   `yaml:"version"`
+	OpenaiApiKey       string              `yaml:"openai_api_key"`
+	Prompt             string              `yaml:"prompt"`
+	Gpt3               bool                `yaml:"gpt3"`
+	Gpt4               bool                `yaml:"gpt4"`
+	Update             bool                `yaml:"update"`
+	DisableUpdateCheck bool                `yaml:"disable_update_check"`
+	Output             string              `yaml:"output"`
+	Jsonl              bool                `yaml:"jsonl"`
+	Verbose            bool                `yaml:"verbose"`
+	Silent             bool                `yaml:"silent"`
+	NoColor            bool                `yaml:"no_color"`
+	Version            bool                `yaml:"version"`
+	Stream             bool                `yaml:"stream"`
+	TopP               float32             `yaml:"top_p"`
+	Temperature        float32             `yaml:"temperature"`
+	System             goflags.StringSlice `yaml:"system"`      // system message if any
+	NoMarkdown         bool                `yaml:"no-markdown"` // render markdown message
 }
 
 // ParseOptions parses the command line flags provided by a user
 func ParseOptions() *Options {
 	options := &Options{}
+
+	var temperature, topP string
 
 	flagSet := goflags.NewFlagSet()
 
@@ -62,6 +70,9 @@ func ParseOptions() *Options {
 
 	flagSet.CreateGroup("config", "Config",
 		flagSet.StringVarP(&options.OpenaiApiKey, "openai-api-key", "ak", "", "openai api key token (input: string,file,env)"),
+		flagSet.StringVarP(&temperature, "temperature", "t", "", "openai model temperature"),
+		flagSet.StringVarP(&topP, "topp", "tp", "", "openai model top-p"),
+		flagSet.StringSliceVarP(&options.System, "system-context", "sc", []string{}, "system message to send to the model (optional) (string,file)", goflags.FileNormalizedStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("update", "Update",
@@ -76,10 +87,25 @@ func ParseOptions() *Options {
 		flagSet.BoolVar(&options.Silent, "silent", false, "display silent output"),
 		flagSet.BoolVarP(&options.NoColor, "no-color", "nc", false, "disable colors in cli output"),
 		flagSet.BoolVar(&options.Version, "version", false, "display project version"),
+		flagSet.BoolVar(&options.Stream, "stream", false, "stream output to stdout (markdown rendering will be disabled)"),
+		flagSet.BoolVarP(&options.NoMarkdown, "no-markdown", "nm", false, "skip rendering markdown response"),
 	)
 
 	if err := flagSet.Parse(); err != nil {
 		gologger.Fatal().Msgf("%s\n", err)
+	}
+
+	if temperature != "" {
+		val, err := strconv.ParseFloat(temperature, 32)
+		if err == nil {
+			options.Temperature = float32(val)
+		}
+	}
+	if topP != "" {
+		val, err := strconv.ParseFloat(topP, 32)
+		if err == nil {
+			options.TopP = float32(val)
+		}
 	}
 
 	if fileutil.HasStdin() {
