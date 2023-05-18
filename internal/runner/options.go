@@ -66,13 +66,13 @@ func ParseOptions() *Options {
 	flagSet.CreateGroup("model", "Model",
 		flagSet.BoolVarP(&options.Gpt3, "gpt3", "g3", true, "use GPT-3.5 model"),
 		flagSet.BoolVarP(&options.Gpt4, "gpt4", "g4", false, "use GPT-4.0 model"),
-		flagSet.StringSliceVar(&options.System, "system", []string{}, "system message to send to the model (optional) (string,file)", goflags.FileNormalizedStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("config", "Config",
 		flagSet.StringVarP(&options.OpenaiApiKey, "openai-api-key", "ak", "", "openai api key token (input: string,file,env)"),
-		flagSet.StringVar(&temperature, "temperature", "", "openai model temperature"),
-		flagSet.StringVar(&topP, "top-p", "", "openai model top-p"),
+		flagSet.StringVarP(&temperature, "temperature", "t", "", "openai model temperature"),
+		flagSet.StringVarP(&topP, "topp", "tp", "", "openai model top-p"),
+		flagSet.StringSliceVarP(&options.System, "system-context", "sc", []string{}, "system message to send to the model (optional) (string,file)", goflags.FileNormalizedStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("update", "Update",
@@ -87,8 +87,8 @@ func ParseOptions() *Options {
 		flagSet.BoolVar(&options.Silent, "silent", false, "display silent output"),
 		flagSet.BoolVarP(&options.NoColor, "no-color", "nc", false, "disable colors in cli output"),
 		flagSet.BoolVar(&options.Version, "version", false, "display project version"),
-		flagSet.BoolVar(&options.Stream, "stream", false, "stream output to stdout"),
-		flagSet.BoolVarP(&options.NoMarkdown, "nm", "no-markdown", false, "skip rendering markdown response"),
+		flagSet.BoolVar(&options.Stream, "stream", false, "stream output to stdout (markdown rendering will be disabled)"),
+		flagSet.BoolVarP(&options.NoMarkdown, "no-markdown", "nm", false, "skip rendering markdown response"),
 	)
 
 	if err := flagSet.Parse(); err != nil {

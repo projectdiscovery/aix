@@ -67,14 +67,14 @@ INPUT:
    -p, -prompt string  prompt to query (input: stdin,string,file)
 
 MODEL:
-   -g3, -gpt3        use GPT-3.5 model (default true)
-   -g4, -gpt4        use GPT-4.0 model
-   -system string[]  system message to send to the model (optional) (string,file)
+   -g3, -gpt3  use GPT-3.5 model (default true)
+   -g4, -gpt4  use GPT-4.0 model
 
 CONFIG:
-   -ak, -openai-api-key string  openai api key token (input: string,file,env)
-   -temperature string          openai model temperature
-   -top-p string                openai model top-p
+   -ak, -openai-api-key string    openai api key token (input: string,file,env)
+   -t, -temperature string        openai model temperature
+   -tp, -topp string              openai model top-p
+   -sc, -system-context string[]  system message to send to the model (optional) (string,file)
 
 UPDATE:
    -up, -update                 update aix to latest version
@@ -87,8 +87,8 @@ OUTPUT:
    -silent             display silent output
    -nc, -no-color      disable colors in cli output
    -version            display project version
-   -stream             stream output to stdout
-   -no-markdown, -nm   skip rendering markdown response
+   -stream             stream output to stdout (markdown rendering will be disabled)
+   -nm, -no-markdown   skip rendering markdown response
 ```
 
 ## Examples
