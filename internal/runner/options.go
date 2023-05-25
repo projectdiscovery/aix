@@ -55,12 +55,14 @@ func ParseOptions() *Options {
 
 	var temperature, topP string
 
+	var promptArray goflags.StringSlice
+
 	flagSet := goflags.NewFlagSet()
 
 	flagSet.SetDescription(`AIx is a cli tool to interact with Large Language Model (LLM) APIs.`)
 
 	flagSet.CreateGroup("input", "Input",
-		flagSet.StringVarP(&options.Prompt, "prompt", "p", "", "prompt to query (input: stdin,string,file)"),
+		flagSet.StringSliceVarP(&promptArray, "prompt", "p", nil, "prompt to query (input: stdin,string,file)", goflags.FileCommaSeparatedStringSliceOptions),
 	)
 
 	flagSet.CreateGroup("model", "Model",
@@ -94,6 +96,9 @@ func ParseOptions() *Options {
 	if err := flagSet.Parse(); err != nil {
 		gologger.Fatal().Msgf("%s\n", err)
 	}
+
+	// Join prompt array into a single string
+	options.Prompt = strings.Join(promptArray, "\n")
 
 	if temperature != "" {
 		val, err := strconv.ParseFloat(temperature, 32)
