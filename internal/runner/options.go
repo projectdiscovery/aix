@@ -75,6 +75,7 @@ func ParseOptions() *Options {
 		flagSet.StringVarP(&temperature, "temperature", "t", "", "openai model temperature"),
 		flagSet.StringVarP(&topP, "topp", "tp", "", "openai model top-p"),
 		flagSet.StringSliceVarP(&options.System, "system-context", "sc", []string{}, "system message to send to the model (optional) (string,file)", goflags.FileNormalizedStringSliceOptions),
+		flagSet.BoolVarP(&options.Stream, "stream", "s", false, "stream output to stdout (markdown rendering will be disabled)"),
 	)
 
 	flagSet.CreateGroup("update", "Update",
@@ -89,7 +90,6 @@ func ParseOptions() *Options {
 		flagSet.BoolVar(&options.Silent, "silent", false, "display silent output"),
 		flagSet.BoolVarP(&options.NoColor, "no-color", "nc", false, "disable colors in cli output"),
 		flagSet.BoolVar(&options.Version, "version", false, "display project version"),
-		flagSet.BoolVar(&options.Stream, "stream", false, "stream output to stdout (markdown rendering will be disabled)"),
 		flagSet.BoolVarP(&options.NoMarkdown, "no-markdown", "nm", false, "skip rendering markdown response"),
 	)
 
