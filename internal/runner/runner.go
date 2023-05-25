@@ -2,11 +2,18 @@ package runner
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
+	"strings"
 	"time"
 
+	errorutil "github.com/projectdiscovery/utils/errors"
 	"github.com/sashabaranov/go-openai"
 )
+
+// ErrNoKey is returned when no key is provided
+var ErrNoKey = errorutil.New("OPENAI_API_KEY is not configured / provided.")
 
 // Runner contains the internal logic of the program
 type Runner struct {
@@ -24,7 +31,7 @@ func NewRunner(options *Options) (*Runner, error) {
 func (r *Runner) Run() (*Result, error) {
 	var model string
 	if r.options.OpenaiApiKey == "" {
-		return &Result{}, fmt.Errorf("OPENAI_API_KEY is not configured / provided.")
+		return &Result{}, ErrNoKey
 	}
 
 	client := openai.NewClient(r.options.OpenaiApiKey)
@@ -36,31 +43,79 @@ func (r *Runner) Run() (*Result, error) {
 		model = openai.GPT4
 	}
 
-	chatGptResp, err := client.CreateChatCompletion(
-		context.Background(),
-		openai.ChatCompletionRequest{
-			Model: model,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: r.options.Prompt,
-				},
-			},
-		},
-	)
-	if err != nil {
-		return &Result{}, err
+	chatReq := openai.ChatCompletionRequest{
+		Model:    model,
+		Messages: []openai.ChatCompletionMessage{},
 	}
 
-	if len(chatGptResp.Choices) == 0 {
-		return &Result{}, fmt.Errorf("no data on response")
+	if len(r.options.System) != 0 {
+		chatReq.Messages = append(chatReq.Messages, openai.ChatCompletionMessage{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: strings.Join(r.options.System, "\n"),
+		})
+	}
+
+	if r.options.Prompt != "" {
+		chatReq.Messages = append(chatReq.Messages, openai.ChatCompletionMessage{
+			Role:    openai.ChatMessageRoleUser,
+			Content: r.options.Prompt,
+		})
+	}
+
+	if len(chatReq.Messages) == 0 {
+		return &Result{}, fmt.Errorf("no prompt provided")
+	}
+
+	if r.options.Temperature != 0 {
+		chatReq.Temperature = r.options.Temperature
+	}
+	if r.options.TopP != 0 {
+		chatReq.TopP = r.options.TopP
 	}
 
 	result := &Result{
-		Timestamp:  time.Now().String(),
-		Model:      model,
-		Prompt:     r.options.Prompt,
-		Completion: chatGptResp.Choices[0].Message.Content,
+		Timestamp: time.Now().String(),
+		Model:     model,
+		Prompt:    r.options.Prompt,
+	}
+
+	switch {
+	case r.options.Stream:
+		// stream response
+		result.SetupStreaming()
+		go func(res *Result) {
+			defer res.CloseCompletionStream()
+			chatReq.Stream = true
+			stream, err := client.CreateChatCompletionStream(context.TODO(), chatReq)
+			if err != nil {
+				res.Error = err
+				return
+			}
+			for {
+				response, err := stream.Recv()
+				if errors.Is(err, io.EOF) {
+					break
+				}
+				if err != nil {
+					res.Error = err
+					return
+				}
+				if len(response.Choices) == 0 {
+					res.Error = fmt.Errorf("got empty response")
+					return
+				}
+				res.WriteCompletionStreamResponse(response.Choices[0].Delta.Content)
+			}
+		}(result)
+	default:
+		chatGptResp, err := client.CreateChatCompletion(context.TODO(), chatReq)
+		if err != nil {
+			return &Result{Error: err}, err
+		}
+		if len(chatGptResp.Choices) == 0 {
+			return &Result{}, fmt.Errorf("no data on response")
+		}
+		result.Completion = chatGptResp.Choices[0].Message.Content
 	}
 
 	return result, nil
