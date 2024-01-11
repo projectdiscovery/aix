@@ -15,13 +15,20 @@ builds:
     - arm
     - arm64
 
+  ignore:
+    - goos: darwin
+      goarch: '386'
+    - goos: windows
+      goarch: 'arm'
+    - goos: windows
+      goarch: 'arm64'
+
   binary: '{{ .ProjectName }}'
   main: cmd/aix/main.go
 
 archives:
 - format: zip
-  replacements:
-      darwin: macOS
+  name_template: '{{ .ProjectName }}_{{ .Version }}_{{ if eq .Os "darwin" }}macOS{{ else }}{{ .Os }}{{ end }}_{{ .Arch }}'
 
 checksum:
   algorithm: sha256
@@ -31,7 +38,7 @@ announce:
     enabled: true
     channel: '#release'
     username: GoReleaser
-    message_template: 'New Release: {{ .ProjectName }} {{ .Tag }} is published! Check it out at {{ .ReleaseURL }}'
+    message_template: 'New Release: {{ .ProjectName }} {{.Tag}} is published! Check it out at {{ .ReleaseURL }}'
 
   discord:
     enabled: true
