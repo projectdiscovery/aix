@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -40,7 +41,39 @@ func (r *Runner) Run() (*Result, error) {
 		model = openai.GPT3Dot5Turbo
 	}
 	if r.options.Gpt4 {
-		model = openai.GPT4
+		// use turbo preview by default
+		model = openai.GPT4TurboPreview
+	}
+	if r.options.Model != "" {
+		model = r.options.Model
+	}
+
+	if r.options.ListModels {
+		models, err := client.ListModels(context.Background())
+		if err != nil {
+			return &Result{}, err
+		}
+		var buff bytes.Buffer
+		for _, model := range models.Models {
+			buff.WriteString(fmt.Sprintf("%s\n", model.ID))
+		}
+
+		result := &Result{
+			Timestamp: time.Now().String(),
+			Model:     model,
+			Prompt:    r.options.Prompt,
+		}
+
+		if r.options.Stream {
+			result.SetupStreaming()
+			go func(res *Result) {
+				defer res.CloseCompletionStream()
+				res.WriteCompletionStreamResponse(buff.String())
+			}(result)
+		} else {
+			result.Completion = buff.String()
+		}
+		return result, nil
 	}
 
 	chatReq := openai.ChatCompletionRequest{

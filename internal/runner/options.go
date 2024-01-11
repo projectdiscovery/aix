@@ -34,6 +34,8 @@ type Options struct {
 	Prompt             string              `yaml:"prompt"`
 	Gpt3               bool                `yaml:"gpt3"`
 	Gpt4               bool                `yaml:"gpt4"`
+	Model              string              `yaml:"model"`
+	ListModels         bool                `yaml:"list_models"`
 	Update             bool                `yaml:"update"`
 	DisableUpdateCheck bool                `yaml:"disable_update_check"`
 	Output             string              `yaml:"output"`
@@ -68,6 +70,8 @@ func ParseOptions() *Options {
 	flagSet.CreateGroup("model", "Model",
 		flagSet.BoolVarP(&options.Gpt3, "gpt3", "g3", true, "use GPT-3.5 model"),
 		flagSet.BoolVarP(&options.Gpt4, "gpt4", "g4", false, "use GPT-4.0 model"),
+		flagSet.StringVarP(&options.Model, "model", "m", "", "specify model to use (ex: gpt-4-0314)"),
+		flagSet.BoolVarP(&options.ListModels, "list-models", "lm", false, "list available models"),
 	)
 
 	flagSet.CreateGroup("config", "Config",
