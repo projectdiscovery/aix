@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/charmbracelet/glamour v0.6.0
 	github.com/logrusorgru/aurora v2.0.3+incompatible
-	github.com/projectdiscovery/goflags v0.1.34
+	github.com/projectdiscovery/goflags v0.1.35
 	github.com/projectdiscovery/gologger v1.1.12
 	github.com/projectdiscovery/utils v0.0.73
 	github.com/sashabaranov/go-openai v1.18.1
