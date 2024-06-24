@@ -7,7 +7,7 @@ COPY . /app
 RUN go mod download
 RUN go build ./cmd/aix
 
-FROM alpine:3.20.0
+FROM alpine:3.20.1
 RUN apk -U upgrade --no-cache \
     && apk add --no-cache bind-tools ca-certificates
 COPY --from=builder /app/aix /usr/local/bin/
