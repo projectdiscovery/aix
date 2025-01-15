@@ -191,12 +191,10 @@ func printModelsInGrid(buff *bytes.Buffer, models []string, columns int) {
 		}
 	}
 
-	// Add padding to the column width
-	columnWidth := maxLength + 4 // Add 4 spaces for padding
+	columnWidth := maxLength + 5
 
 	// Print models in a grid
 	for i, model := range models {
-		// Print the model name with padding
 		buff.WriteString(fmt.Sprintf("%-*s", columnWidth, model))
 		// Move to the next line after every `columns` models
 		if (i+1)%columns == 0 {
