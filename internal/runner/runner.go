@@ -74,7 +74,7 @@ func (r *Runner) Run() (*Result, error) {
 		buff.WriteString("\n")
 
 		// Print O1 models
-		buff.WriteString("## O1 Models:\n\n")
+		buff.WriteString("## o1 Models:\n\n")
 		printModelsInGrid(&buff, o1Models, 2) // Print in 2 columns
 		buff.WriteString("\n")
 
