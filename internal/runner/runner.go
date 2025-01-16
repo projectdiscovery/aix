@@ -54,16 +54,14 @@ func (r *Runner) Run() (*Result, error) {
 			return &Result{}, err
 		}
 
-		// Categorize models into gpt, o1, and others
-		var gptModels, o1Models, otherModels []string
+		// Categorize models into gpt and o1
+		var gptModels, o1Models []string
 		for _, model := range models.Models {
 			switch {
 			case strings.HasPrefix(model.ID, "gpt") || strings.HasPrefix(model.ID, "chatgpt"):
 				gptModels = append(gptModels, model.ID)
 			case strings.HasPrefix(model.ID, "o1"):
 				o1Models = append(o1Models, model.ID)
-			default:
-				otherModels = append(otherModels, model.ID)
 			}
 		}
 
@@ -78,11 +76,6 @@ func (r *Runner) Run() (*Result, error) {
 		// Print O1 models
 		buff.WriteString("## O1 Models:\n\n")
 		printModelsInGrid(&buff, o1Models, 2) // Print in 2 columns
-		buff.WriteString("\n")
-
-		// Print Other models
-		buff.WriteString("## Other Models:\n\n")
-		printModelsInGrid(&buff, otherModels, 2) // Print in 2 columns
 		buff.WriteString("\n")
 
 		result := &Result{
