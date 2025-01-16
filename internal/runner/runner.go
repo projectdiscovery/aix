@@ -53,10 +53,30 @@ func (r *Runner) Run() (*Result, error) {
 		if err != nil {
 			return &Result{}, err
 		}
-		var buff bytes.Buffer
+
+		// Categorize models into gpt and o1
+		var gptModels, o1Models []string
 		for _, model := range models.Models {
-			buff.WriteString(fmt.Sprintf("%s\n", model.ID))
+			switch {
+			case strings.HasPrefix(model.ID, "gpt") || strings.HasPrefix(model.ID, "chatgpt"):
+				gptModels = append(gptModels, model.ID)
+			case strings.HasPrefix(model.ID, "o1"):
+				o1Models = append(o1Models, model.ID)
+			}
 		}
+
+		// Use a buffer to build the output
+		var buff bytes.Buffer
+
+		// Print GPT models
+		buff.WriteString("## GPT Models:\n\n")
+		printModelsInGrid(&buff, gptModels, 2) // Print in 2 columns
+		buff.WriteString("\n")
+
+		// Print O1 models
+		buff.WriteString("## o1 Models:\n\n")
+		printModelsInGrid(&buff, o1Models, 2) // Print in 2 columns
+		buff.WriteString("\n")
 
 		result := &Result{
 			Timestamp: time.Now().String(),
@@ -152,4 +172,30 @@ func (r *Runner) Run() (*Result, error) {
 	}
 
 	return result, nil
+}
+
+// printModelsInGrid prints models in a grid layout with a specified number of columns
+func printModelsInGrid(buff *bytes.Buffer, models []string, columns int) {
+	// Calculate the maximum length of model names in the list
+	maxLength := 0
+	for _, model := range models {
+		if len(model) > maxLength {
+			maxLength = len(model)
+		}
+	}
+
+	columnWidth := maxLength + 5
+
+	// Print models in a grid
+	for i, model := range models {
+		buff.WriteString(fmt.Sprintf("%-*s", columnWidth, model))
+		// Move to the next line after every `columns` models
+		if (i+1)%columns == 0 {
+			buff.WriteString("\n")
+		}
+	}
+	// Ensure the last line ends properly
+	if len(models)%columns != 0 {
+		buff.WriteString("\n")
+	}
 }
