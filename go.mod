@@ -1,6 +1,6 @@
 module github.com/projectdiscovery/aix
 
-go 1.19
+go 1.21
 
 require (
 	github.com/charmbracelet/glamour v0.8.0
@@ -8,7 +8,7 @@ require (
 	github.com/projectdiscovery/goflags v0.1.41
 	github.com/projectdiscovery/gologger v1.1.12
 	github.com/projectdiscovery/utils v0.0.79
-	github.com/sashabaranov/go-openai v1.38.0
+	github.com/sashabaranov/go-openai v1.40.1
 )
 
 require (
