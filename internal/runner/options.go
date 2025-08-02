@@ -30,10 +30,9 @@ var (
 
 // Options contains the configuration options for tuning the enumeration process.
 type Options struct {
+	Provider           string              `yaml:"provider"`
 	OpenaiApiKey       string              `yaml:"openai_api_key"`
 	Prompt             string              `yaml:"prompt"`
-	Gpt3               bool                `yaml:"gpt3"`
-	Gpt4               bool                `yaml:"gpt4"`
 	Model              string              `yaml:"model"`
 	ListModels         bool                `yaml:"list_models"`
 	Update             bool                `yaml:"update"`
@@ -68,8 +67,7 @@ func ParseOptions() *Options {
 	)
 
 	flagSet.CreateGroup("model", "Model",
-		flagSet.BoolVarP(&options.Gpt3, "gpt3", "g3", true, "use GPT-3.5 model"),
-		flagSet.BoolVarP(&options.Gpt4, "gpt4", "g4", false, "use GPT-4.0 model"),
+		flagSet.StringVarP(&options.Provider, "provider", "pr", "openai", "specify llm provider to use (openai, ollama)"),
 		flagSet.StringVarP(&options.Model, "model", "m", "", "specify model to use (ex: gpt-4-0314)"),
 		flagSet.BoolVarP(&options.ListModels, "list-models", "lm", false, "list available models"),
 	)
