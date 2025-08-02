@@ -3,14 +3,13 @@ package runner
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"time"
 
+	"github.com/projectdiscovery/aix/internal/provider"
 	errorutil "github.com/projectdiscovery/utils/errors"
-	"github.com/sashabaranov/go-openai"
 )
 
 // ErrNoKey is returned when no key is provided
@@ -18,160 +17,147 @@ var ErrNoKey = errorutil.New("OPENAI_API_KEY is not configured / provided.")
 
 // Runner contains the internal logic of the program
 type Runner struct {
-	options *Options
+	options  *Options
+	provider provider.Provider
 }
 
 // NewRunner instance
 func NewRunner(options *Options) (*Runner, error) {
+	var p provider.Provider
+	var err error
+
+	switch options.Provider {
+	case "openai":
+		p, err = provider.NewOpenAI(options.OpenaiApiKey, options.Model)
+	default:
+		err = fmt.Errorf("unsupported provider `%s`", options.Provider)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &Runner{
-		options: options,
+		options:  options,
+		provider: p,
 	}, nil
 }
 
 // Run the instance
 func (r *Runner) Run() (*Result, error) {
-	var model string
-	if r.options.OpenaiApiKey == "" {
-		return &Result{}, ErrNoKey
-	}
-
-	client := openai.NewClient(r.options.OpenaiApiKey)
-
-	if r.options.Gpt3 {
-		model = openai.GPT3Dot5Turbo
-	}
-	if r.options.Gpt4 {
-		// use turbo preview by default
-		model = openai.GPT4TurboPreview
-	}
-	if r.options.Model != "" {
-		model = r.options.Model
-	}
-
 	if r.options.ListModels {
-		models, err := client.ListModels(context.Background())
-		if err != nil {
-			return &Result{}, err
-		}
+		return r.runListModels()
+	}
 
+	if r.options.Prompt == "" {
+		return nil, fmt.Errorf("no prompt provided")
+	}
+
+	if r.options.Stream {
+		return r.runChatStream()
+	}
+	return r.runChat()
+}
+
+func (r *Runner) runListModels() (*Result, error) {
+	models, err := r.provider.ListModels(context.Background())
+	if err != nil {
+		return &Result{}, err
+	}
+
+	// Use a buffer to build the output
+	var buff bytes.Buffer
+
+	if r.provider.Name() == "openai" {
 		// Categorize models into gpt and o1
 		var gptModels, o1Models []string
-		for _, model := range models.Models {
+		for _, model := range models {
 			switch {
-			case strings.HasPrefix(model.ID, "gpt") || strings.HasPrefix(model.ID, "chatgpt"):
-				gptModels = append(gptModels, model.ID)
-			case strings.HasPrefix(model.ID, "o1"):
-				o1Models = append(o1Models, model.ID)
+			case strings.HasPrefix(model, "gpt") || strings.HasPrefix(model, "chatgpt"):
+				gptModels = append(gptModels, model)
+			case strings.HasPrefix(model, "o1"):
+				o1Models = append(o1Models, model)
 			}
 		}
-
-		// Use a buffer to build the output
-		var buff bytes.Buffer
-
 		// Print GPT models
 		buff.WriteString("## GPT Models:\n\n")
 		printModelsInGrid(&buff, gptModels, 2) // Print in 2 columns
 		buff.WriteString("\n")
 
-		// Print O1 models
+		// Print o1 models
 		buff.WriteString("## o1 Models:\n\n")
 		printModelsInGrid(&buff, o1Models, 2) // Print in 2 columns
 		buff.WriteString("\n")
-
-		result := &Result{
-			Timestamp: time.Now().String(),
-			Model:     model,
-			Prompt:    r.options.Prompt,
-		}
-
-		if r.options.Stream {
-			result.SetupStreaming()
-			go func(res *Result) {
-				defer res.CloseCompletionStream()
-				res.WriteCompletionStreamResponse(buff.String())
-			}(result)
-		} else {
-			result.Completion = buff.String()
-		}
-		return result, nil
-	}
-
-	chatReq := openai.ChatCompletionRequest{
-		Model:    model,
-		Messages: []openai.ChatCompletionMessage{},
-	}
-
-	if len(r.options.System) != 0 {
-		chatReq.Messages = append(chatReq.Messages, openai.ChatCompletionMessage{
-			Role:    openai.ChatMessageRoleSystem,
-			Content: strings.Join(r.options.System, "\n"),
-		})
-	}
-
-	if r.options.Prompt != "" {
-		chatReq.Messages = append(chatReq.Messages, openai.ChatCompletionMessage{
-			Role:    openai.ChatMessageRoleUser,
-			Content: r.options.Prompt,
-		})
-	}
-
-	if len(chatReq.Messages) == 0 {
-		return &Result{}, fmt.Errorf("no prompt provided")
-	}
-
-	if r.options.Temperature != 0 {
-		chatReq.Temperature = r.options.Temperature
-	}
-	if r.options.TopP != 0 {
-		chatReq.TopP = r.options.TopP
+	} else {
+		// Print models in a grid for other providers
+		buff.WriteString(fmt.Sprintf("## %s Models:\n\n", r.provider.Name()))
+		printModelsInGrid(&buff, models, 2) // Print in 2 columns
+		buff.WriteString("\n")
 	}
 
 	result := &Result{
 		Timestamp: time.Now().String(),
-		Model:     model,
+		Model:     r.provider.Name(),
 		Prompt:    r.options.Prompt,
 	}
 
-	switch {
-	case r.options.Stream:
-		// stream response
+	if r.options.Stream {
 		result.SetupStreaming()
 		go func(res *Result) {
 			defer res.CloseCompletionStream()
-			chatReq.Stream = true
-			stream, err := client.CreateChatCompletionStream(context.TODO(), chatReq)
-			if err != nil {
-				res.Error = err
-				return
-			}
-			for {
-				response, err := stream.Recv()
-				if errors.Is(err, io.EOF) {
-					break
-				}
-				if err != nil {
-					res.Error = err
-					return
-				}
-				if len(response.Choices) == 0 {
-					res.Error = fmt.Errorf("got empty response")
-					return
-				}
-				res.WriteCompletionStreamResponse(response.Choices[0].Delta.Content)
-			}
+			res.WriteCompletionStreamResponse(buff.String())
 		}(result)
-	default:
-		chatGptResp, err := client.CreateChatCompletion(context.TODO(), chatReq)
-		if err != nil {
-			return &Result{Error: err}, err
-		}
-		if len(chatGptResp.Choices) == 0 {
-			return &Result{}, fmt.Errorf("no data on response")
-		}
-		result.Completion = chatGptResp.Choices[0].Message.Content
+	} else {
+		result.Completion = buff.String()
+	}
+	return result, nil
+}
+
+func (r *Runner) runChat() (*Result, error) {
+	systemPrompt := strings.Join(r.options.System, "\n")
+	opts := r.newChatOptions()
+
+	providerResult, err := r.provider.Chat(context.TODO(), r.options.Prompt, systemPrompt, opts)
+	if err != nil {
+		return &Result{Error: err}, err
+	}
+	result := &Result{
+		Timestamp:  time.Now().String(),
+		Model:      providerResult.Model,
+		Prompt:     r.options.Prompt,
+		Completion: providerResult.Completion,
+	}
+	return result, nil
+}
+
+func (r *Runner) runChatStream() (*Result, error) {
+	systemPrompt := strings.Join(r.options.System, "\n")
+	opts := r.newChatOptions()
+
+	result := &Result{
+		Timestamp: time.Now().String(),
+		Model:     r.provider.Name(),
+		Prompt:    r.options.Prompt,
 	}
 
+	result.SetupStreaming()
+	go func(res *Result) {
+		defer res.CloseCompletionStream()
+		streamResult, err := r.provider.ChatStream(context.TODO(), r.options.Prompt, systemPrompt, opts)
+		if err != nil {
+			res.Error = err
+			return
+		}
+		io.Copy(res.streamWriter, streamResult.CompletionStream)
+	}(result)
 	return result, nil
+}
+
+func (r *Runner) newChatOptions() provider.ChatOptions {
+	return provider.ChatOptions{
+		Temperature: r.options.Temperature,
+		TopP:        r.options.TopP,
+	}
 }
 
 // printModelsInGrid prints models in a grid layout with a specified number of columns
