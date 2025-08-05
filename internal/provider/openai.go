@@ -70,8 +70,8 @@ func (p *OpenAIProvider) ChatStream(ctx context.Context, prompt string, systemPr
 	errChan := make(chan error, 1)
 
 	go func() {
-		defer stream.Close()
-		defer w.Close()
+		defer func() { _ = stream.Close() }()
+		defer func() { _ = w.Close() }()
 		defer close(errChan)
 
 		for {

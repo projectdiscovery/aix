@@ -148,7 +148,10 @@ func (r *Runner) runChatStream() (*Result, error) {
 			res.Error = err
 			return
 		}
-		io.Copy(res.streamWriter, streamResult.CompletionStream)
+		if _, err := io.Copy(res.streamWriter, streamResult.CompletionStream); err != nil {
+			res.Error = err
+			return
+		}
 	}(result)
 	return result, nil
 }
@@ -174,7 +177,7 @@ func printModelsInGrid(buff *bytes.Buffer, models []string, columns int) {
 
 	// Print models in a grid
 	for i, model := range models {
-		buff.WriteString(fmt.Sprintf("%-*s", columnWidth, model))
+		fmt.Fprintf(buff, "%-*s", columnWidth, model)
 		// Move to the next line after every `columns` models
 		if (i+1)%columns == 0 {
 			buff.WriteString("\n")
