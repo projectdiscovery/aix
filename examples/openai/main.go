@@ -9,10 +9,10 @@ import (
 
 func main() {
 	options := &runner.Options{
-		OpenaiApiKey:       "API-KEY",
+		Provider:           "openai",
+		Model:              "gpt-3.5-turbo", // Specify the model to use
+		OpenaiApiKey:       "YOUR_OPENAI_API_KEY",
 		Prompt:             "what is the capital of france?",
-		Gpt3:               true,
-		Gpt4:               false,
 		Update:             false,
 		DisableUpdateCheck: false,
 		Output:             "out.txt",
@@ -33,6 +33,6 @@ func main() {
 		gologger.Fatal().Msgf("Could not run aix: %s\n", err)
 	}
 
-	fmt.Println(result.Prompt)
-	fmt.Println(result.Completion)
+	fmt.Printf("Prompt: %s\n", result.Prompt)
+	fmt.Printf("Answer: %s\n", result.Completion)
 }
