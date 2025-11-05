@@ -11,7 +11,7 @@ var banner = (`
    ___   _____  __
   / _ | /  _/ |/_/
  / __ |_/ /_>  < 
-/_/ |_/___/_/|_|  Powered by OpenAI
+/_/ |_/___/_/|_|
 
    projectdiscovery.io		  
 `)

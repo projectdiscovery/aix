@@ -29,6 +29,12 @@ func NewRunner(options *Options) (*Runner, error) {
 	switch options.Provider {
 	case "openai":
 		p, err = provider.NewOpenAI(options.OpenaiApiKey, options.Model)
+	case "ollama":
+		if options.Model == "" && !options.ListModels {
+			return nil, errorutil.New("--model flag is required for ollama provider; " +
+				"use `aix --provider ollama --list-models` to see available models")
+		}
+		p, err = provider.NewOllama(options.Model)
 	default:
 		err = fmt.Errorf("unsupported provider `%s`", options.Provider)
 	}
