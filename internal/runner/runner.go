@@ -74,6 +74,14 @@ func (r *Runner) runListModels() (*Result, error) {
 	// Use a buffer to build the output
 	var buff bytes.Buffer
 
+	// Calculate the maximum length of model names for consistent alignment
+	maxLength := 0
+	for _, model := range models {
+		if len(model) > maxLength {
+			maxLength = len(model)
+		}
+	}
+
 	if r.provider.Name() == "openai" {
 		// Categorize models into gpt and o1
 		var gptModels, o1Models []string
@@ -87,17 +95,17 @@ func (r *Runner) runListModels() (*Result, error) {
 		}
 		// Print GPT models
 		buff.WriteString("## GPT Models:\n\n")
-		printModelsInGrid(&buff, gptModels, 2) // Print in 2 columns
+		printModelsInGrid(&buff, gptModels, 2, maxLength) // Print in 2 columns
 		buff.WriteString("\n")
 
 		// Print o1 models
 		buff.WriteString("## o1 Models:\n\n")
-		printModelsInGrid(&buff, o1Models, 2) // Print in 2 columns
+		printModelsInGrid(&buff, o1Models, 2, maxLength) // Print in 2 columns
 		buff.WriteString("\n")
 	} else {
 		// Print models in a grid for other providers
 		buff.WriteString(fmt.Sprintf("## %s Models:\n\n", r.provider.Name()))
-		printModelsInGrid(&buff, models, 2) // Print in 2 columns
+		printModelsInGrid(&buff, models, 2, maxLength) // Print in 2 columns
 		buff.WriteString("\n")
 	}
 
@@ -170,16 +178,8 @@ func (r *Runner) newChatOptions() provider.ChatOptions {
 }
 
 // printModelsInGrid prints models in a grid layout with a specified number of columns
-func printModelsInGrid(buff *bytes.Buffer, models []string, columns int) {
-	// Calculate the maximum length of model names in the list
-	maxLength := 0
-	for _, model := range models {
-		if len(model) > maxLength {
-			maxLength = len(model)
-		}
-	}
-
-	columnWidth := maxLength + 5
+func printModelsInGrid(buff *bytes.Buffer, models []string, columns int, maxLength int) {
+	columnWidth := maxLength + 4
 
 	// Print models in a grid
 	for i, model := range models {
