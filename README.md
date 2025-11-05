@@ -38,7 +38,7 @@
 - Flexible output options
 
 ## Installation
-To install aix, you need to have Golang 1.19 installed on your system. You can download Golang from [here](https://go.dev/doc/install). After installing Golang, you can use the following command to install aix:
+To install aix, you need to have Golang 1.24 installed on your system. You can download Golang from [here](https://go.dev/doc/install). After installing Golang, you can use the following command to install aix:
 
 
 ```bash
