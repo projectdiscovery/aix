@@ -32,8 +32,8 @@
 
 ## Features
 - **AMA with AI** over **CLI**
-- **Query LLM APIs** (OpenAI)
-- Supports **GPT-3.5 and GPT-4.0** models
+- **Query LLM APIs** (OpenAI, Ollama)
+- Supports **multiple providers and models**
 - Configurable with OpenAI API key
 - Flexible output options
 
@@ -47,11 +47,33 @@ go install github.com/projectdiscovery/aix/cmd/aix@latest
 
 ## Prerequisite
 
-> **Note**: Before using aix, make sure to set your [OpenAI API key](https://platform.openai.com/account/api-keys) as an environment variable `OPENAI_API_KEY`.
+### OpenAI
+
+**Note**: Before using `aix` with the `openai` provider, make sure to set your [OpenAI API key](https://platform.openai.com/account/api-keys) as an environment variable `OPENAI_API_KEY`.
 
 ```bash
 export OPENAI_API_KEY=******
-````
+```
+
+### Ollama
+
+To use `aix` with the `ollama` provider, you need to have [Ollama](https://ollama.com/) installed. You can download it from the official website.
+
+You also need to pull the models you want to use. You can do this by running the `ollama pull <model_name>` command. For example, to download the `gemma3:4b` model, you would run:
+
+```bash
+ollama pull gemma3:4b
+```
+
+Before using the `ollama` provider, make sure the Ollama server is running.
+
+```bash
+# You can start it with:
+ollama serve
+
+# or by running a model with:
+ollama run <model_name>
+```
 
 ## Help Menu
 You can use the following command to see the available flags and options:
@@ -67,10 +89,9 @@ INPUT:
    -p, -prompt string[]  prompt to query (input: stdin,string,file)
 
 MODEL:
-   -g3, -gpt3         use GPT-3.5 model (default true)
-   -g4, -gpt4         use GPT-4.0 model
-   -m, -model string  specify model to use (ex: gpt-4-0314)
-   -lm, -list-models  list available models
+   -pr, -provider string  specify llm provider to use (openai, ollama) (default "openai")
+   -m, -model string      specify model to use (ex: gpt-4-turbo)
+   -lm, -list-models      list available models
 
 CONFIG:
    -ak, -openai-api-key string    openai api key token (input: string,file,env)
@@ -103,12 +124,18 @@ You can use aix to interact with LLM (OpenAI) APIs to query anything and everyth
 aix -p "What is the capital of France?"
 ```
 
-### Example 2: Query with GPT-4.0 model
+### Example 2: Query with a specific model
 ```bash
-aix -p "How to install Linux?" -g4
+aix -p "How to install Linux?" -m "gpt-4-turbo"
 ```
 
-### Example 3: Query LLM API with a prompt with STDIN input
+### Example 3: Query with Ollama provider
+
+```bash
+aix -p "What is the capital of France?" -pr ollama -m gemma3:4b
+```
+
+### Example 4: Query LLM API with a prompt with STDIN input
 
 ```console
 echo list top trending web technologies | aix
@@ -116,7 +143,7 @@ echo list top trending web technologies | aix
    ___   _____  __
   / _ | /  _/ |/_/
  / __ |_/ /_>  < 
-/_/ |_/___/_/|_|  Powered by OpenAI
+/_/ |_/___/_/|_|
 
    projectdiscovery.io		  
 
@@ -140,14 +167,14 @@ echo list top trending web technologies | aix
 Note: These technologies are constantly changing and evolving, so this list is subject to change over time.
 ```
 
-### Example 4: Query LLM API with a prompt and save the output to a file in JSONLine format.
+### Example 5: Query LLM API with a prompt and save the output to a file in JSONLine format.
 ```console
 aix -p "What is the capital of France?" -jsonl -o output.txt | jq .
 
    ___   _____  __
   / _ | /  _/ |/_/
  / __ |_/ /_>  < 
-/_/ |_/___/_/|_|  Powered by OpenAI
+/_/ |_/___/_/|_|
 
    projectdiscovery.io		  
 
@@ -160,14 +187,14 @@ aix -p "What is the capital of France?" -jsonl -o output.txt | jq .
 }
 ```
 
-### Example 5: Query LLM API in verbose mode
+### Example 6: Query LLM API in verbose mode
 ```console
 aix -p "What is the capital of France?" -v
 
    ___   _____  __
   / _ | /  _/ |/_/
  / __ |_/ /_>  < 
-/_/ |_/___/_/|_|  Powered by OpenAI
+/_/ |_/___/_/|_|
 
    projectdiscovery.io		  
 
@@ -182,6 +209,7 @@ For more information on the usage of aix, please refer to the help menu with the
 
 - [OpenAI](https://platform.openai.com/docs/introduction) for publishing LLM APIs.
 - [sashabaranov](https://github.com/sashabaranov) for building and maintaining [go-openai](https://github.com/sashabaranov/go-openai) library.
+- [Ollama](https://ollama.com) for their open-source large language models.
 
 --------
 
