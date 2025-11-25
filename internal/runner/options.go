@@ -68,7 +68,7 @@ func ParseOptions() *Options {
 
 	flagSet.CreateGroup("model", "Model",
 		flagSet.StringVarP(&options.Provider, "provider", "pr", "openai", "specify llm provider to use (openai, ollama)"),
-		flagSet.StringVarP(&options.Model, "model", "m", "", "specify model to use (ex: gpt-4-0314)"),
+		flagSet.StringVarP(&options.Model, "model", "m", "", "specify model to use (ex: gpt-4-turbo)"),
 		flagSet.BoolVarP(&options.ListModels, "list-models", "lm", false, "list available models"),
 	)
 

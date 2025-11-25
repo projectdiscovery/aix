@@ -56,7 +56,7 @@ func main() {
 	}
 	if !options.Stream {
 		outputData := result.Completion
-		if renderer != nil {
+		if renderer != nil && !options.ListModels {
 			out, err := renderer.Render(outputData)
 			if err == nil {
 				outputData = out
