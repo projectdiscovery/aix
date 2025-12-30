@@ -59,9 +59,10 @@ func (r *Runner) Run() (*Result, error) {
 		}
 
 		result := &Result{
-			Timestamp: time.Now().String(),
-			Model:     model,
-			Prompt:    r.options.Prompt,
+			Timestamp:    time.Now().String(),
+			Model:        model,
+			Prompt:       r.options.Prompt,
+			SkipMarkdown: true,
 		}
 
 		if r.options.Stream {

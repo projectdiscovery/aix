@@ -15,6 +15,7 @@ type Result struct {
 	CompletionStream *io.PipeReader `json:"-"` // contained stream response
 	streamWriter     *io.PipeWriter `json:"-"` // only used for streaming
 	Error            error          `json:"-"`
+	SkipMarkdown     bool           `json:"-"` // skip markdown rendering
 }
 
 // SetupStreaming sets up the streaming for the result
