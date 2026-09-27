@@ -162,9 +162,13 @@ func (r *Runner) runChatStream() (*Result, error) {
 			res.Error = err
 			return
 		}
+		defer func() { _ = streamResult.CompletionStream.Close() }()
 		if _, err := io.Copy(res.streamWriter, streamResult.CompletionStream); err != nil {
 			res.Error = err
 			return
+		}
+		if streamResult.Error != nil {
+			res.Error = <-streamResult.Error
 		}
 	}(result)
 	return result, nil

@@ -33,7 +33,7 @@ func (r *Result) WriteCompletionStreamResponse(data string) {
 // CloseCompletionStream closes the completion stream
 func (r *Result) CloseCompletionStream() {
 	if r.streamWriter != nil && r.CompletionStream != nil {
-		_ = r.streamWriter.Close()
+		_ = r.streamWriter.CloseWithError(r.Error)
 	}
 }
 
