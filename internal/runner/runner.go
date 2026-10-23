@@ -104,7 +104,7 @@ func (r *Runner) runListModels() (*Result, error) {
 		buff.WriteString("\n")
 	} else {
 		// Print models in a grid for other providers
-		buff.WriteString(fmt.Sprintf("## %s Models:\n\n", r.provider.Name()))
+		_, _ = fmt.Fprintf(&buff, "## %s Models:\n\n", r.provider.Name())
 		printModelsInGrid(&buff, models, 2, maxLength) // Print in 2 columns
 		buff.WriteString("\n")
 	}
