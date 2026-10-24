@@ -3,7 +3,7 @@ module github.com/projectdiscovery/aix
 go 1.26.10
 
 require (
-	github.com/charmbracelet/glamour v0.8.0
+	github.com/charmbracelet/glamour v1.0.0
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/ollama/ollama v0.12.9
 	github.com/projectdiscovery/goflags v0.2.1
@@ -17,7 +17,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/STARRY-S/zip v0.2.3 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
-	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
+	github.com/alecthomas/chroma/v2 v2.20.0 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
@@ -25,8 +25,12 @@ require (
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.6.1 // indirect
 	github.com/bodgit/windows v1.0.1 // indirect
-	github.com/charmbracelet/lipgloss v0.13.0 // indirect
-	github.com/charmbracelet/x/ansi v0.3.2 // indirect
+	github.com/charmbracelet/colorprofile v0.2.3-0.20250311203215-f60798e515dc // indirect
+	github.com/charmbracelet/lipgloss v1.1.1-0.20250404203927-76690c660834 // indirect
+	github.com/charmbracelet/x/ansi v0.10.2 // indirect
+	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
+	github.com/charmbracelet/x/exp/slice v0.0.0-20250327172914-2fdc97757edf // indirect
+	github.com/charmbracelet/x/term v0.2.1 // indirect
 	github.com/cheggaaa/pb/v3 v3.1.4 // indirect
 	github.com/cnf/structhash v0.0.0-20250313080605-df4c6cc74a9a // indirect
 	github.com/djherbis/times v1.6.0 // indirect
@@ -45,11 +49,11 @@ require (
 	github.com/klauspost/compress v1.18.2 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/logrusorgru/aurora/v4 v4.0.0 // indirect
-	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
+	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
-	github.com/mattn/go-runewidth v0.0.16 // indirect
+	github.com/mattn/go-runewidth v0.0.17 // indirect
 	github.com/mholt/archives v0.1.5 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
@@ -59,7 +63,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
-	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a // indirect
+	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/nwaples/rardecode/v2 v2.2.2 // indirect
 	github.com/pierrec/lz4/v4 v4.1.23 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -77,8 +81,9 @@ require (
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
-	github.com/yuin/goldmark v1.7.4 // indirect
-	github.com/yuin/goldmark-emoji v1.0.3 // indirect
+	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	github.com/yuin/goldmark v1.7.13 // indirect
+	github.com/yuin/goldmark-emoji v1.0.6 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	github.com/zcalusic/sysinfo v1.0.2 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
