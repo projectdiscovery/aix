@@ -3,17 +3,17 @@ package runner
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"time"
 
 	"github.com/projectdiscovery/aix/internal/provider"
-	errorutil "github.com/projectdiscovery/utils/errors"
 )
 
 // ErrNoKey is returned when no key is provided
-var ErrNoKey = errorutil.New("OPENAI_API_KEY is not configured / provided.")
+var ErrNoKey = errors.New("OPENAI_API_KEY is not configured or provided")
 
 // Runner contains the internal logic of the program
 type Runner struct {
@@ -31,7 +31,7 @@ func NewRunner(options *Options) (*Runner, error) {
 		p, err = provider.NewOpenAI(options.OpenaiApiKey, options.Model)
 	case "ollama":
 		if options.Model == "" && !options.ListModels {
-			return nil, errorutil.New("--model flag is required for ollama provider; " +
+			return nil, errors.New("--model flag is required for ollama provider; " +
 				"use `aix --provider ollama --list-models` to see available models")
 		}
 		p, err = provider.NewOllama(options.Model)
@@ -104,7 +104,7 @@ func (r *Runner) runListModels() (*Result, error) {
 		buff.WriteString("\n")
 	} else {
 		// Print models in a grid for other providers
-		buff.WriteString(fmt.Sprintf("## %s Models:\n\n", r.provider.Name()))
+		_, _ = fmt.Fprintf(&buff, "## %s Models:\n\n", r.provider.Name())
 		printModelsInGrid(&buff, models, 2, maxLength) // Print in 2 columns
 		buff.WriteString("\n")
 	}
