@@ -9,7 +9,7 @@ require (
 	github.com/projectdiscovery/goflags v0.2.1
 	github.com/projectdiscovery/gologger v1.1.73
 	github.com/projectdiscovery/utils v0.11.10
-	github.com/sashabaranov/go-openai v1.38.0
+	github.com/sashabaranov/go-openai v1.43.0
 )
 
 require (
