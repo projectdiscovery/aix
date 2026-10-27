@@ -65,7 +65,9 @@ func main() {
 		fmt.Println(outputData)
 	} else {
 		// rendering not supported for streaming
-		_, _ = io.Copy(os.Stdout, result.CompletionStream)
+		if _, err := io.Copy(os.Stdout, result.CompletionStream); err != nil {
+			gologger.Fatal().Msgf("Could not stream completion: %s\n", err)
+		}
 	}
 	if options.Output != "" {
 		if err := os.WriteFile(options.Output, []byte(result.Completion), 0644); err != nil {
