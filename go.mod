@@ -7,7 +7,7 @@ require (
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/ollama/ollama v0.40.10
 	github.com/projectdiscovery/goflags v0.2.1
-	github.com/projectdiscovery/gologger v1.1.73
+	github.com/projectdiscovery/gologger v1.1.74
 	github.com/projectdiscovery/utils v0.11.10
 	github.com/sashabaranov/go-openai v1.43.0
 )
