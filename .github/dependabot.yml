@@ -17,6 +17,9 @@ updates:
       include: "scope"
     labels:
       - "Type: Maintenance"
+    groups:
+      github-actions:
+        patterns: ["*"]
 
   # Maintain dependencies for go modules
   - package-ecosystem: "gomod"
@@ -29,6 +32,12 @@ updates:
       include: "scope"
     labels:
       - "Type: Maintenance"
+    groups:
+      projectdiscovery:
+        patterns: ["github.com/projectdiscovery/*"]
+      external:
+        patterns: ["*"]
+        exclude-patterns: ["github.com/projectdiscovery/*"]
 
   # Maintain dependencies for docker
   - package-ecosystem: "docker"
@@ -41,3 +50,6 @@ updates:
       include: "scope"
     labels:
       - "Type: Maintenance"
+    groups:
+      docker:
+        patterns: ["*"]
