@@ -20,7 +20,7 @@ func NewOpenAI(apiKey string, model string) (*OpenAIProvider, error) {
 		return nil, errors.New("OpenAI API key is not configured")
 	}
 	if model == "" {
-		model = openai.GPT3Dot5Turbo // Default model if not specified
+		model = openai.GPT6Luna
 	}
 	return &OpenAIProvider{
 		client: openai.NewClient(apiKey),
