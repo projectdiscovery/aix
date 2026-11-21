@@ -5,7 +5,8 @@ before:
     - go mod tidy
 
 builds:
-- env:
+- id: aix
+  env:
   - CGO_ENABLED=0
   goos:
     - windows
@@ -28,12 +29,49 @@ builds:
   binary: '{{ .ProjectName }}'
   main: cmd/aix/main.go
 
+# docker-only: the published linux/arm image is arm/v7, but the aix build above
+# compiles the default GOARM=6, so the image gets its own armv7 binary, which no
+# archive ships.
+- id: aix-docker-armv7
+  env:
+  - CGO_ENABLED=0
+  goos:
+    - linux
+  goarch:
+    - arm
+  goarm:
+    - 7
+
+  binary: '{{ .ProjectName }}'
+  main: cmd/aix/main.go
+
 archives:
-- formats: [zip]
+- ids:
+  - aix
+  formats: [zip]
   name_template: '{{ .ProjectName }}_{{ .Version }}_{{ if eq .Os "darwin" }}macOS{{ else }}{{ .Os }}{{ end }}_{{ .Arch }}'
 
 checksum:
   algorithm: sha256
+
+dockers_v2:
+- ids:
+  - aix
+  - aix-docker-armv7
+  images:
+    - projectdiscovery/aix
+  tags:
+    - '{{ .Tag }}'
+    - latest
+  labels:
+    org.opencontainers.image.created: '{{ .Date }}'
+    org.opencontainers.image.ref.name: '{{ .Tag }}'
+    org.opencontainers.image.revision: '{{ .FullCommit }}'
+    org.opencontainers.image.version: '{{ .Version }}'
+  platforms:
+    - linux/amd64
+    - linux/arm64
+    - linux/arm/v7
 
 announce:
   slack:
