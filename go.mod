@@ -5,7 +5,7 @@ go 1.26.10
 require (
 	github.com/charmbracelet/glamour v1.0.0
 	github.com/logrusorgru/aurora v2.0.3+incompatible
-	github.com/ollama/ollama v0.40.16
+	github.com/ollama/ollama v0.40.17
 	github.com/projectdiscovery/goflags v0.2.2
 	github.com/projectdiscovery/gologger v1.1.77
 	github.com/projectdiscovery/utils v0.11.15
