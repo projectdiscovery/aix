@@ -10,7 +10,7 @@ import (
 func main() {
 	options := &runner.Options{
 		Provider:           "openai",
-		Model:              "gpt-3.5-turbo", // Specify the model to use
+		Model:              "gpt-6-luna", // Specify the model to use
 		OpenaiApiKey:       "YOUR_OPENAI_API_KEY",
 		Prompt:             "what is the capital of france?",
 		Update:             false,
