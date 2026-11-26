@@ -8,7 +8,7 @@ require (
 	github.com/ollama/ollama v0.40.17
 	github.com/projectdiscovery/goflags v0.2.2
 	github.com/projectdiscovery/gologger v1.1.77
-	github.com/projectdiscovery/utils v0.11.15
+	github.com/projectdiscovery/utils v0.11.16
 	github.com/sashabaranov/go-openai v1.43.0
 )
 
