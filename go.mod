@@ -8,7 +8,7 @@ require (
 	github.com/ollama/ollama v0.40.17
 	github.com/projectdiscovery/goflags v0.2.2
 	github.com/projectdiscovery/gologger v1.1.77
-	github.com/projectdiscovery/utils v0.11.16
+	github.com/projectdiscovery/utils v0.11.17
 	github.com/sashabaranov/go-openai v1.43.0
 )
 
@@ -57,7 +57,7 @@ require (
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
-	github.com/projectdiscovery/blackrock v0.0.2 // indirect
+	github.com/projectdiscovery/blackrock v0.0.4 // indirect
 	github.com/projectdiscovery/machineid v0.0.0-20250715113114-c77eb3567582 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
